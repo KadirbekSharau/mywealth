@@ -31,8 +31,8 @@ func main() {
 
 
 	routes.InitAuthRoutes(db, server)
-	// routes.InitBookRoutes(db, server)
-	// routes.InitUserRoutes(db, server)
+	routes.InitAccountsRoutes(db, server)
+	routes.InitAuthRoutes(db, server)
 
 	server.Run(":8080")
 }

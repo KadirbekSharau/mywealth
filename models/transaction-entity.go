@@ -10,6 +10,7 @@ type EntityTransactions struct {
 	Name        string `gorm:"type:varchar(30)"`
 	Description string `gorm:"type:varchar"`
 	Amount      int    `gorm:"not null"`
+	Positive    bool   `gorm:"not null"`
 	UserID      uint   `gorm:"not null"`
 	AccountID   uint   `gorm:"not null"`
 	CategoryID  uint   `gorm:"not null"`

@@ -1,8 +1,8 @@
 package loginAuthController
 
 import (
-	util "github.com/KadirbekSharau/mywealth-backend/util"
 	model "github.com/KadirbekSharau/mywealth-backend/models"
+	util "github.com/KadirbekSharau/mywealth-backend/util"
 	"gorm.io/gorm"
 )
 
