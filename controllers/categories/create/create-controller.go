@@ -3,25 +3,25 @@ package createCategoryController
 import "github.com/KadirbekSharau/mywealth-backend/models"
 
 type Service interface {
-	CreateCategoryService(input *InputCreateCategory) (*models.EntityCategories, string)
+	CreateCategory(input *InputCreateCategory) (*models.EntityCategories, string)
 }
 
 type service struct {
-	repository repository
+	repo *repository
 }
 
-func NewCreateCategoryService(repository repository) Service {
-	return &service{repository: repository}
+func NewService(repo *repository) Service {
+	return &service{repo: repo}
 }
 
 /* Create category controller */
-func (s *service) CreateCategoryService(input *InputCreateCategory) (*models.EntityCategories, string) {
+func (s *service) CreateCategory(input *InputCreateCategory) (*models.EntityCategories, string) {
 	category := models.EntityCategories{
 		Name:   input.Name,
 		UserID: input.UserID,
 	}
 
-	return s.repository.CreateCategoryRepository(&category)
+	return s.repo.CreateCategory(&category)
 }
 
 type InputCreateCategory struct {

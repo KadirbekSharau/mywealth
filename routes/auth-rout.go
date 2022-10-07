@@ -12,13 +12,13 @@ import (
 /* @description All Auth routes */
 func InitAuthRoutes(db *gorm.DB, route *gin.Engine) {
 	var (
-		loginRepository loginAuthController.Repository = loginAuthController.NewRepositoryLogin(db)
-		loginService loginAuthController.Service = loginAuthController.NewServiceLogin(loginRepository)
-		loginHandler LoginHandler.Handler = LoginHandler.NewLoginHandler(loginService)
+		loginRepository = loginAuthController.NewRepositoryLogin(db)
+		loginService    = loginAuthController.NewServiceLogin(loginRepository)
+		loginHandler    = LoginHandler.NewLoginHandler(loginService)
 
-		registerRepository registerAuthController.Repository = registerAuthController.NewRepositoryRegister(db)
-		registerService registerAuthController.Service = registerAuthController.NewServiceRegister(registerRepository)
-		registerHandler registerHandler.Handler = registerHandler.NewHandlerRegister(registerService)
+		registerRepository = registerAuthController.NewRepositoryRegister(db)
+		registerService    = registerAuthController.NewServiceRegister(registerRepository)
+		registerHandler    = registerHandler.NewHandlerRegister(registerService)
 	)
 
 	groupRoute := route.Group("/api/v1/auth")

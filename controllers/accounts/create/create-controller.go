@@ -3,25 +3,25 @@ package createAccountController
 import "github.com/KadirbekSharau/mywealth-backend/models"
 
 type Service interface {
-	CreateAccountService(input *InputCreateAccount) (*models.EntityAccounts, string)
+	CreateAccount(input *InputCreateAccount) (*models.EntityAccounts, string)
 }
 
 type service struct {
-	repository repository
+	repo *repository
 }
 
-func NewCreateAccountService(repository repository) Service {
-	return &service{repository: repository}
+func NewService(repo *repository) Service {
+	return &service{repo: repo}
 }
 
 /* Create account controller */
-func (s *service) CreateAccountService(input *InputCreateAccount) (*models.EntityAccounts, string) {
+func (s *service) CreateAccount(input *InputCreateAccount) (*models.EntityAccounts, string) {
 	acccount := models.EntityAccounts{
 		Name: input.Name,
 		UserID: input.UserID,
 	}
 
-	return s.repository.CreateAccountRepository(&acccount)
+	return s.repo.CreateAccount(&acccount)
 }
 
 type InputCreateAccount struct {

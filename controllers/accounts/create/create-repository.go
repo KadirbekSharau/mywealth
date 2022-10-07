@@ -9,11 +9,11 @@ type repository struct {
 	db *gorm.DB
 }
 
-func NewCreateAccountRepository(db *gorm.DB) *repository {
+func NewRepository(db *gorm.DB) *repository {
 	return &repository{db: db}
 }
 
-func (r *repository) CreateAccountRepository(input *models.EntityAccounts) (*models.EntityAccounts, string) {
+func (r *repository) CreateAccount(input *models.EntityAccounts) (*models.EntityAccounts, string) {
 	var account models.EntityAccounts
 	db := r.db.Model(&account)
 	errorCode := make(chan string, 1)
@@ -21,7 +21,7 @@ func (r *repository) CreateAccountRepository(input *models.EntityAccounts) (*mod
 	checkExist := db.Debug().Select("*").Where("name = ?", input.Name).Find(&account)
 
 	if checkExist.RowsAffected > 0 {
-		errorCode <- "CREATE_ACCOUNT_CONFLICT_409"
+		errorCode <- "CREATE_CONFLICT_409"
 		return &account, <-errorCode
 	}
 
@@ -36,7 +36,7 @@ func (r *repository) CreateAccountRepository(input *models.EntityAccounts) (*mod
 	db.Commit()
 
 	if addNewAcc.Error != nil {
-		errorCode <- "CREATE_ACCOUNT_FAILED_403"
+		errorCode <- "CREATE_FAILED_403"
 	} else {
 		errorCode <- "nil"
 	}

@@ -9,11 +9,11 @@ type repository struct {
 	db *gorm.DB
 }
 
-func NewCreateCategoryRepository(db *gorm.DB) *repository {
+func NewRepository(db *gorm.DB) *repository {
 	return &repository{db: db}
 }
 
-func (r *repository) CreateCategoryRepository(input *models.EntityCategories) (*models.EntityCategories, string) {
+func (r *repository) CreateCategory(input *models.EntityCategories) (*models.EntityCategories, string) {
 	var category models.EntityCategories
 	db := r.db.Model(&category)
 	errorCode := make(chan string, 1)
@@ -21,7 +21,7 @@ func (r *repository) CreateCategoryRepository(input *models.EntityCategories) (*
 	checkExist := db.Debug().Select("*").Where("name = ?", input.Name).Find(&category)
 
 	if checkExist.RowsAffected > 0 {
-		errorCode <- "CREATE_CATEGORY_CONFLICT_409"
+		errorCode <- "CREATE_CONFLICT_409"
 		return &category, <-errorCode
 	}
 
@@ -35,7 +35,7 @@ func (r *repository) CreateCategoryRepository(input *models.EntityCategories) (*
 	db.Commit()
 
 	if addNewAcc.Error != nil {
-		errorCode <- "CREATE_CATEGORY_FAILED_403"
+		errorCode <- "CREATE_FAILED_403"
 	} else {
 		errorCode <- "nil"
 	}

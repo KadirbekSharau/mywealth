@@ -9,18 +9,18 @@ import (
 )
 
 type Handler interface {
-	CreateAccountHandler(ctx *gin.Context) 
+	CreateAccount(ctx *gin.Context) 
 }
 
 type handler struct {
 	service createAccountController.Service
 }
 
-func NewCreateAccountHandler(service createAccountController.Service) *handler {
+func NewHandler(service createAccountController.Service) *handler {
 	return &handler{service: service}
 }
 
-func (h *handler) CreateAccountHandler(ctx *gin.Context) {
+func (h *handler) CreateAccount(ctx *gin.Context) {
 	var input createAccountController.InputCreateAccount
 	ctx.ShouldBindJSON(&input)
 
@@ -46,18 +46,18 @@ func (h *handler) CreateAccountHandler(ctx *gin.Context) {
 		return
 	}
 
-	_, errAccount := h.service.CreateAccountService(&input)
+	_, errAccount := h.service.CreateAccount(&input)
 
 	switch errAccount {
-	case "CREATE_ACCOUNT_CONFLICT_409":
+	case "CREATE_CONFLICT_409":
 		util.APIResponse(ctx, "Name field already exist", http.StatusConflict, http.MethodPost, nil)
 		return
 
-	case "CREATE_ACCOUNT_FAILED_403":
-		util.APIResponse(ctx, "Create new account failed", http.StatusForbidden, http.MethodPost, nil)
+	case "CREATE_FAILED_403":
+		util.APIResponse(ctx, "Create new instance failed", http.StatusForbidden, http.MethodPost, nil)
 		return
 
 	default:
-		util.APIResponse(ctx, "Create new account successfully", http.StatusCreated, http.MethodPost, nil)
+		util.APIResponse(ctx, "Create new instance successfully", http.StatusCreated, http.MethodPost, nil)
 	}
 }

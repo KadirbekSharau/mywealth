@@ -9,18 +9,18 @@ import (
 )
 
 type Handler interface {
-	CreateCategoryHandler(ctx *gin.Context) 
+	CreateCategory(ctx *gin.Context)
 }
 
 type handler struct {
 	service createCategoryController.Service
 }
 
-func NewCreateCategoryHandler(service createCategoryController.Service) *handler {
+func NewHandler(service createCategoryController.Service) *handler {
 	return &handler{service: service}
 }
 
-func (h *handler) CreateCategoryHandler(ctx *gin.Context) {
+func (h *handler) CreateCategory(ctx *gin.Context) {
 	var input createCategoryController.InputCreateCategory
 	ctx.ShouldBindJSON(&input)
 
@@ -46,18 +46,18 @@ func (h *handler) CreateCategoryHandler(ctx *gin.Context) {
 		return
 	}
 
-	_, errAccount := h.service.CreateCategoryService(&input)
+	_, errAccount := h.service.CreateCategory(&input)
 
 	switch errAccount {
-	case "CREATE_CATEGORY_CONFLICT_409":
+	case "CREATE_CONFLICT_409":
 		util.APIResponse(ctx, "Name field already exist", http.StatusConflict, http.MethodPost, nil)
 		return
 
-	case "CREATE_CATEGORY_FAILED_403":
-		util.APIResponse(ctx, "Create new account failed", http.StatusForbidden, http.MethodPost, nil)
+	case "CREATE_FAILED_403":
+		util.APIResponse(ctx, "Create new instance failed", http.StatusForbidden, http.MethodPost, nil)
 		return
 
 	default:
-		util.APIResponse(ctx, "Create new category successfully", http.StatusCreated, http.MethodPost, nil)
+		util.APIResponse(ctx, "Create new instance successfully", http.StatusCreated, http.MethodPost, nil)
 	}
 }
