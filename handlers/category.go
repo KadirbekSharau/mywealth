@@ -10,13 +10,14 @@ import (
 
 type CategoryHandler interface {
 	CreateCategory(ctx *gin.Context)
+	GetAllCategories(ctx *gin.Context)
 }
 
 type categoryHandler struct {
 	service categoryService.Service
 }
 
-func NewCategoryHandler(service categoryService.Service) *categoryHandler {
+func NewCategoryHandler(service categoryService.Service) CategoryHandler {
 	return &categoryHandler{service: service}
 }
 
