@@ -1,4 +1,4 @@
-package loginHandler
+package helpers
 
 import (
 	"net/http"
@@ -13,7 +13,7 @@ var roles = map[string]int{"user": 1, "admin": 2}
 const secret_key string = "JWT_SECRET"
 const expTime = 24*60*1
 
-var config = util.ErrorConfig{
+var Config = util.ErrorConfig{
 	Options: []util.ErrorMetaConfig{
 		{
 			Tag:     "required",
@@ -60,5 +60,31 @@ func UserLoginTokenHandler(ctx *gin.Context, errLogin string, resultLogin *model
 		}
 
 		util.APIResponse(ctx, "Login successfully", http.StatusOK, http.MethodPost, map[string]string{"accessToken": accessToken})
+	}
+}
+
+/* User Registration Error Handler */
+func ErrUserRegisterHandler(resultRegister *models.EntityUsers, ctx *gin.Context, errRegister string) {
+	switch errRegister {
+
+	case "REGISTER_CONFLICT_409":
+		util.APIResponse(ctx, "Email already exist", http.StatusConflict, http.MethodPost, nil)
+		return
+
+	case "REGISTER_FAILED_403":
+		util.APIResponse(ctx, "Register new User account failed", http.StatusForbidden, http.MethodPost, nil)
+		return
+
+	default:
+		accessTokenData := map[string]interface{}{"id": resultRegister.ID, "email": resultRegister.Email}
+		_, errToken := util.Sign(accessTokenData, util.GodotEnv("JWT_SECRET"), 60)
+
+		if errToken != nil {
+			defer logrus.Error(errToken.Error())
+			util.APIResponse(ctx, "Generate accessToken failed", http.StatusBadRequest, http.MethodPost, nil)
+			return
+		}
+
+		util.APIResponse(ctx, "Register new user account successfully", http.StatusCreated, http.MethodPost, nil)
 	}
 }

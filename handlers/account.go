@@ -1,27 +1,45 @@
-package createAccountHandler
+package handlers
 
 import (
 	"net/http"
 
-	"github.com/KadirbekSharau/mywealth-backend/controllers/accounts/create"
+	"github.com/KadirbekSharau/mywealth-backend/services/account"
 	"github.com/KadirbekSharau/mywealth-backend/util"
 	"github.com/gin-gonic/gin"
 )
 
-type Handler interface {
+type AccountHandler interface {
+	UpdateAccountByID(ctx *gin.Context)
+	GetAllAcounts(ctx *gin.Context)
 	CreateAccount(ctx *gin.Context) 
 }
 
-type handler struct {
-	service createAccountController.Service
+type accountHandler struct {
+	service accountService.Service
 }
 
-func NewHandler(service createAccountController.Service) *handler {
-	return &handler{service: service}
+func NewAccountHandler(service accountService.Service) *accountHandler {
+	return &accountHandler{service: service}
 }
 
-func (h *handler) CreateAccount(ctx *gin.Context) {
-	var input createAccountController.InputCreateAccount
+/* Get All Accounts Handler */
+func (h *accountHandler) GetAllAcounts(ctx *gin.Context) {
+
+	fields, err := h.service.GetAllAccounts()
+
+	switch err {
+
+	case "RESULTS_NOT_FOUND_404":
+		util.APIResponse(ctx, "data does not exist", http.StatusConflict, http.MethodPost, nil)
+
+	default:
+		util.APIResponse(ctx, "data found successfully", http.StatusOK, http.MethodPost, fields)
+	}
+}
+
+// CreateAccount creates the account
+func (h *accountHandler) CreateAccount(ctx *gin.Context) {
+	var input accountService.InputCreateAccount
 	ctx.ShouldBindJSON(&input)
 
 	config := util.ErrorConfig{
@@ -61,3 +79,5 @@ func (h *handler) CreateAccount(ctx *gin.Context) {
 		util.APIResponse(ctx, "Create new instance successfully", http.StatusCreated, http.MethodPost, nil)
 	}
 }
+
+func (h *accountHandler) UpdateAccountByID(ctx *gin.Context) {}

@@ -1,27 +1,42 @@
-package createCategoryHandler
+package handlers
 
 import (
 	"net/http"
 
-	"github.com/KadirbekSharau/mywealth-backend/controllers/categories/create"
+	"github.com/KadirbekSharau/mywealth-backend/services/category"
 	"github.com/KadirbekSharau/mywealth-backend/util"
 	"github.com/gin-gonic/gin"
 )
 
-type Handler interface {
+type CategoryHandler interface {
 	CreateCategory(ctx *gin.Context)
 }
 
-type handler struct {
-	service createCategoryController.Service
+type categoryHandler struct {
+	service categoryService.Service
 }
 
-func NewHandler(service createCategoryController.Service) *handler {
-	return &handler{service: service}
+func NewCategoryHandler(service categoryService.Service) *categoryHandler {
+	return &categoryHandler{service: service}
 }
 
-func (h *handler) CreateCategory(ctx *gin.Context) {
-	var input createCategoryController.InputCreateCategory
+/* Get All Categories Handler */
+func (h *categoryHandler) GetAllCategories(ctx *gin.Context) {
+
+	fields, err := h.service.GetAllCategories()
+
+	switch err {
+
+	case "RESULTS_NOT_FOUND_404":
+		util.APIResponse(ctx, "Data does not exist", http.StatusConflict, http.MethodPost, nil)
+
+	default:
+		util.APIResponse(ctx, "data found successfully", http.StatusOK, http.MethodPost, fields)
+	}
+}
+
+func (h *categoryHandler) CreateCategory(ctx *gin.Context) {
+	var input categoryService.InputCreateCategory
 	ctx.ShouldBindJSON(&input)
 
 	config := util.ErrorConfig{

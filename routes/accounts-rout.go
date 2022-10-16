@@ -1,10 +1,8 @@
 package routes
 
 import (
-	"github.com/KadirbekSharau/mywealth-backend/controllers/accounts/create"
-	"github.com/KadirbekSharau/mywealth-backend/handlers/accounts/create"
-	"github.com/KadirbekSharau/mywealth-backend/controllers/accounts/get"
-	"github.com/KadirbekSharau/mywealth-backend/handlers/accounts/get"
+	"github.com/KadirbekSharau/mywealth-backend/services/account"
+	"github.com/KadirbekSharau/mywealth-backend/handlers"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
@@ -12,16 +10,12 @@ import (
 /* @description All Accounts routes */
 func InitAccountsRoutes(db *gorm.DB, route *gin.Engine) {
 	var (
-		createRepository  = createAccountController.NewRepository(db)
-		createService = createAccountController.NewService(createRepository)
-		createHandler = createAccountHandler.NewHandler(createService)
-
-		getRepository  = getAccountsController.NewRepository(db)
-		getService = getAccountsController.NewService(getRepository)
-		getHandler = getAccountsHandler.NewHandler(getService)
+		repository  = accountService.NewRepository(db)
+		service = accountService.NewService(repository)
+		handler = handlers.NewAccountHandler(service)
 	)
 
 	groupRoute := route.Group("/api/v1/accounts")
-	groupRoute.POST("/create", createHandler.CreateAccount)
-	groupRoute.GET("/get", getHandler.GetAllAcounts)
+	groupRoute.POST("/create", handler.CreateAccount)
+	groupRoute.GET("/get", handler.GetAllAcounts)
 }

@@ -1,4 +1,4 @@
-package createCategoryController
+package categoryService
 
 import (
 	"github.com/KadirbekSharau/mywealth-backend/models"
@@ -41,4 +41,22 @@ func (r *repository) CreateCategory(input *models.EntityCategories) (*models.Ent
 	}
 
 	return &category, <-errorCode
+}
+
+/* Get All Categories from Repository */
+func (r *repository) GetAllCategories() (*[]models.EntityCategories, string) {
+	var categories []models.EntityCategories
+	db := r.db.Model(&categories)
+	errorCode := make(chan string, 1)
+
+	result := db.Debug().Select("*").Find(&categories)
+
+	if result.Error != nil {
+		errorCode <- "RESULTS_NOT_FOUND_404"
+		return &categories, <-errorCode
+	} else {
+		errorCode <- "nil"
+	}
+
+	return &categories, <-errorCode
 }

@@ -1,10 +1,9 @@
 package routes
 
 import (
-	loginAuthController "github.com/KadirbekSharau/mywealth-backend/controllers/auth/login"
-	registerAuthController "github.com/KadirbekSharau/mywealth-backend/controllers/auth/register"
-	LoginHandler "github.com/KadirbekSharau/mywealth-backend/handlers/auth/login"
-	registerHandler "github.com/KadirbekSharau/mywealth-backend/handlers/auth/register"
+	"github.com/KadirbekSharau/mywealth-backend/services/auth"
+	"github.com/KadirbekSharau/mywealth-backend/handlers"
+
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
@@ -12,17 +11,13 @@ import (
 /* @description All Auth routes */
 func InitAuthRoutes(db *gorm.DB, route *gin.Engine) {
 	var (
-		loginRepository = loginAuthController.NewRepositoryLogin(db)
-		loginService    = loginAuthController.NewServiceLogin(loginRepository)
-		loginHandler    = LoginHandler.NewLoginHandler(loginService)
-
-		registerRepository = registerAuthController.NewRepositoryRegister(db)
-		registerService    = registerAuthController.NewServiceRegister(registerRepository)
-		registerHandler    = registerHandler.NewHandlerRegister(registerService)
+		repository = authService.NewRepository(db)
+		service    = authService.NewService(repository)
+		authHandler    = handlers.NewAuthHandler(service)
 	)
 
 	groupRoute := route.Group("/api/v1/auth")
-	groupRoute.POST("/user/login", loginHandler.UserLoginHandler)
+	groupRoute.POST("/user/login", authHandler.UserLogin)
 	// groupRoute.POST("/admin/login", loginHandler.AdminLoginHandler)
-	groupRoute.POST("/user/register", registerHandler.ActiveUserRegisterHandler)
+	groupRoute.POST("/user/register", authHandler.ActiveUserRegister)
 }
